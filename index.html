@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,103 +7,36 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link rel="icon" href="favicon.ico">
-
   <title>VideoJS MPEG-DASH</title>
-
-  <!-- Bootstrap core CSS. This is just to make the demo look
-    nice. It's not required for videojs-contrib-dash to work. -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Some custom styles for the demo page -->
   <style>
-    body {
-      padding-top: 50px;
-      color: #868688;
-      background-color: #FAFCFF;
+    *
+    {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    nav {
-      background-color: #e7e7e7
+    body
+    {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    nav a {
-      color: #868688;
-    }
-
-    nav a:hover {
-      color: #606062;
-      text-decoration: none;
-    }
-
-    .navbar-toggle .icon-bar {
-      background-color: #868688;
-    }
-
-    .starter-template {
-      padding: 40px 15px;
-      text-align: center;
-    }
-
-    .video-js {
-      margin: 0 auto;
+    #example-video
+    {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
   </style>
-
-  <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
 </head>
-
 <body>
 
-  <div id="app">
-    <nav class="navbar navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-          <a class="navbar-brand" href="#">videojs-contrib-dash</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="https://github.com/videojs/videojs-contrib-dash/blob/master/README.md">Docs</a></li>
-            <li><a href="https://github.com/videojs/videojs-contrib-dash">Source</a></li>
-            <li><a href="https://github.com/videojs/videojs-contrib-dash/issues">Issues</a></li>
-          </ul>
-        </div>
-        <!--/.nav-collapse -->
-      </div>
-    </nav>
-  
-    <div class="container">
-  
-      <section class="starter-template">
-        <h1>VideoJS MPEG-DASH</h1>
-        <p class="lead">
-          <a href="https://github.com/videojs/videojs-contrib-dash">videojs-contrib-dash</a> lets you use a single format and deliver adaptive streaming video to many recent HTML5 browsers.
-        </p>
-  
-        <!--
-            -- Your video element. Just like regular HTML5 video.
-            -->
-        <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
-          </video>
-  
-        <form id=load-url>
-          <label> Video URL: <input id=url type=url value="https://s3.amazonaws.com/_bc_dml/example-content/sintel_dash/sintel_vod.mpd"> </label> <br>
-          <label> Widevine License URL: <input id=wvServer type=url value=""> </label><br>
-          <label> PlayReady License URL: <input id=prServer type=url value=""> </label><br>
-          <button type=submit>Load</button>
-        </form>
-      </section>
-  
-    </div>
-  </div>
+
+  <video id=example-video class="video-js vjs-default-skin" controls></video>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -114,37 +46,31 @@
   <script>
     (function(videojs) {
       var player = window.player = videojs('example-video');
-      var url = document.getElementById('url');
-
-      // hook up the video switcher
-      var loadUrl = document.getElementById('load-url');
-      loadUrl.addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        var wvServer = document.getElementById('wvServer');
-        var prServer = document.getElementById('prServer');
+      
+      function loadVideo(url, wvServer, prServer)
+      {
         var src = {
-          src: url.value,
+          src: url,
           type: 'application/dash+xml'
         };
 
-        if (wvServer.value || prServer.value) {
+        if (wvServer || prServer) {
           src.keySystemOptions = [];
 
-          if (wvServer.value) {
+          if (wvServer) {
             src.keySystemOptions.push({
               name: 'com.widevine.alpha',
               options: {
-                serverURL: wvServer.value
+                serverURL: wvServer
               }
             });
           }
 
-          if (prServer.value) {
+          if (prServer) {
             src.keySystemOptions.push({
               name: 'com.microsoft.playready',
               options: {
-                serverURL: prServer.value
+                serverURL: prServer
               }
             });
           }
@@ -153,17 +79,29 @@
         player.src(src);
 
         return false;
+      };
+
+
+      const query = new URLSearchParams(window.location.search);
+      const streamurl = query.get('url');
+      const license_url = query.get('licence');
+      // const streamurl = "https://cdn846.stm.trueid.net/svod/th_gn/wv/ASS201912001148/index.mpd?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=U1B0Y2JLQXV0eUdYRkZYZDJqV2JlTFpyY01zcWc2QWc&sid=a13f3d8ba0&rt=1728896907&maxrate=6553600&mxr=6553600&ds=86400&duration=86400&tk=3G7xz2IAkB2Jpb7qU9VNW2YnN76LbsfmnxVEX-fyRcE";
+      // const license_url = "https://kdcid.stm.trueid.net/vod/widevine?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=U1B0Y2JLQXV0eUdYRkZYZDJqV2JlTFpyY01zcWc2QWc&sid=a1549dc9de&rt=1728896907&ds=86400&duration=86400&tk=vPsmDAiEM0cn4QRLAoDOYcdRDxWtInJVhp4x4vMUGkA&mpass=SPPDnAduEg9ibZSYh5-P2gkRlXljqYYzG9Wk30b-SMh_S7xR40rniwhCyM-5YCpDMgTcHnzrV8Z7ZXFYkgLNQwPxEDz20MAaVINfzWHS70RZThysM_S5HcLBkv8A-B4hICB2kYQSplBWR-aeZ0wbq_CB";
+      
+
+
+      document.addEventListener('DOMContentLoaded', () => {
+        loadVideo(streamurl, license_url, license_url);
+
+        // console.log(streamurl);
+        // console.log(license_url);
+
+        // console.log(encodeURIComponent("https://cdn706.stm.trueid.net/svod/th_gn/wv/ASS201912001115/index.mpd?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=TGZxc09UYUJiTTF0d2pfd09OSlBGMXR5eVpHdko1TTc&sid=57c3b94254&rt=1728893630&maxrate=6553600&mxr=6553600&ds=86400&duration=86400&tk=PlH7xtvIHq54EcoX1Va2ZPBBob1GLL5LWez_uKwMbTc"));
+        // console.log(encodeURIComponent("https://kdcid.stm.trueid.net/vod/widevine?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=TGZxc09UYUJiTTF0d2pfd09OSlBGMXR5eVpHdko1TTc&sid=b30d1c251a&rt=1728893630&ds=86400&duration=86400&tk=bbHL6uWuebet4ffb3GBAp6586E_K78G7kr1r7VRiMo8&mpass=XtSrkVCQXyq2HGg3d7C2klQBaFjt7DBeMM2fZe09KVkEK8vBSWbgP9aJ7b-tZN0_mDgDtDuYdEBoO9wGPaVQ2pCFjwZ2WuleQyheY1yWwJ-EGuztjS7BQ7fImR4-T3-oICDzNrOgYW_hXcIAxeghsCyS"));
       });
+      console.log("a");
 
-      player.src({
-          src: url.value,
-          type: 'application/dash+xml'
-        });
     })(window.videojs);
-  </script>
-
-  <script>
-    console.log(new URLSearchParams(window.location.search).get("a"));
   </script>
 
 </body>
