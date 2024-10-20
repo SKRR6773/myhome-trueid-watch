@@ -46,6 +46,18 @@
   <script>
     (function(videojs) {
       var player = window.player = videojs('example-video');
+
+      function postMessage(route_name, data = {})
+      {
+          return window.parent.postMessage({
+              route_name,
+              data
+          }, "*");
+      }
+
+      player.on("ended", (event) => {
+        return postMessage('/ended', {});
+      });
       
       function loadVideo(url, wvServer, prServer)
       {
@@ -85,21 +97,11 @@
       const query = new URLSearchParams(window.location.search);
       const streamurl = query.get('url');
       const license_url = query.get('licence');
-      // const streamurl = "https://cdn846.stm.trueid.net/svod/th_gn/wv/ASS201912001148/index.mpd?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=U1B0Y2JLQXV0eUdYRkZYZDJqV2JlTFpyY01zcWc2QWc&sid=a13f3d8ba0&rt=1728896907&maxrate=6553600&mxr=6553600&ds=86400&duration=86400&tk=3G7xz2IAkB2Jpb7qU9VNW2YnN76LbsfmnxVEX-fyRcE";
-      // const license_url = "https://kdcid.stm.trueid.net/vod/widevine?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=U1B0Y2JLQXV0eUdYRkZYZDJqV2JlTFpyY01zcWc2QWc&sid=a1549dc9de&rt=1728896907&ds=86400&duration=86400&tk=vPsmDAiEM0cn4QRLAoDOYcdRDxWtInJVhp4x4vMUGkA&mpass=SPPDnAduEg9ibZSYh5-P2gkRlXljqYYzG9Wk30b-SMh_S7xR40rniwhCyM-5YCpDMgTcHnzrV8Z7ZXFYkgLNQwPxEDz20MAaVINfzWHS70RZThysM_S5HcLBkv8A-B4hICB2kYQSplBWR-aeZ0wbq_CB";
-      
-
+     
 
       document.addEventListener('DOMContentLoaded', () => {
         loadVideo(streamurl, license_url, license_url);
-
-        // console.log(streamurl);
-        // console.log(license_url);
-
-        // console.log(encodeURIComponent("https://cdn706.stm.trueid.net/svod/th_gn/wv/ASS201912001115/index.mpd?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=TGZxc09UYUJiTTF0d2pfd09OSlBGMXR5eVpHdko1TTc&sid=57c3b94254&rt=1728893630&maxrate=6553600&mxr=6553600&ds=86400&duration=86400&tk=PlH7xtvIHq54EcoX1Va2ZPBBob1GLL5LWez_uKwMbTc"));
-        // console.log(encodeURIComponent("https://kdcid.stm.trueid.net/vod/widevine?appid=trueid&type=svod&visitor=web&drm=wv3&uid=196591097&did=TGZxc09UYUJiTTF0d2pfd09OSlBGMXR5eVpHdko1TTc&sid=b30d1c251a&rt=1728893630&ds=86400&duration=86400&tk=bbHL6uWuebet4ffb3GBAp6586E_K78G7kr1r7VRiMo8&mpass=XtSrkVCQXyq2HGg3d7C2klQBaFjt7DBeMM2fZe09KVkEK8vBSWbgP9aJ7b-tZN0_mDgDtDuYdEBoO9wGPaVQ2pCFjwZ2WuleQyheY1yWwJ-EGuztjS7BQ7fImR4-T3-oICDzNrOgYW_hXcIAxeghsCyS"));
       });
-      console.log("a");
 
     })(window.videojs);
   </script>
